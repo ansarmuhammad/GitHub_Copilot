@@ -21,18 +21,9 @@ validate_ccs(df)
 
 # Add a comments column to mention the increase or decrease of critical code smells
 def add_comments(df):
-    df['comments'] = 'no change'
-    for i in range(1, len(df)):
-        if df.at[i, 'Project'] != df.at[i-1, 'Project'] or df.at[i, 'Module'] != df.at[i-1, 'Module']:
-            df.at[i, 'comments'] = 'no change'
-        else:
-            diff = df.at[i, 'Critical code smells'] - df.at[i-1, 'Critical code smells']
-            if diff > 0:
-                df.at[i, 'comments'] = 'increase'
-            elif diff < 0:
-                df.at[i, 'comments'] = 'decrease'
-            else:
-                df.at[i, 'comments'] = 'no change'
+    df['comments'] = df['Critical code smells'].diff().apply(
+    lambda x: 'increase' if x > 0 else ('decrease' if x < 0 else 'no change')
+)
 
 add_comments(df)
 
